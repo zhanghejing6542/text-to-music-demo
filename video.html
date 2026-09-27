@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#000000" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <title>Text to Music Demo</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: #000000;
+        color-scheme: dark;
+      }
+
+      .player-shell {
+        width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        padding:
+          env(safe-area-inset-top)
+          env(safe-area-inset-right)
+          env(safe-area-inset-bottom)
+          env(safe-area-inset-left);
+        display: grid;
+        place-items: center;
+        background: #000000;
+      }
+
+      video {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        background: #000000;
+        touch-action: manipulation;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="player-shell">
+      <video
+        id="player"
+        width="1920"
+        height="1080"
+        controls
+        controlslist="nodownload noremoteplayback"
+        disablepictureinpicture
+        autoplay
+        muted
+        playsinline
+        preload="auto"
+        aria-label="Text to Music demo video"
+      >
+        <source
+          src="./media/text-to-music-demo-september-03.mp4"
+          type="video/mp4"
+        />
+      </video>
+    </main>
+    <script>
+      const player = document.querySelector("#player");
+      const reducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      );
+      let resumeWhenVisible = false;
+
+      player.addEventListener("contextmenu", (event) => {
+        event.preventDefault();
+      });
+
+      if (reducedMotion.matches) {
+        player.autoplay = false;
+        player.pause();
+      } else {
+        player.play().catch(() => {});
+      }
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          resumeWhenVisible = !player.paused;
+          player.pause();
+          return;
+        }
+
+        if (resumeWhenVisible && !reducedMotion.matches) {
+          player.play().catch(() => {});
+        }
+      });
+    </script>
+  </body>
+</html>
